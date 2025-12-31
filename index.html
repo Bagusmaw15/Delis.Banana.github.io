@@ -64,7 +64,6 @@
       margin-bottom: 15px;
     }
     .person-name {
-      text-align: left;
       font-size: 15px;
       margin-bottom: 8px;
     }
@@ -72,13 +71,11 @@
       text-align: center;
       font-size: 24px;
       font-weight: bold;
-      margin-top: 5px;
     }
     .person-terbilang {
       text-align: center;
       font-size: 12px;
       color: #666;
-      margin-top: 2px;
     }
     @media (max-width: 600px) {
       body {
@@ -102,18 +99,27 @@
 <body>
   <div class="container">
     <h1>Pembagian Hasil Panen Delis Banana</h1>
+
     <label for="total">Jumlah Hasil Panen (Rp):</label>
-    <input type="text" id="total" placeholder="Masukkan total panen" oninput="formatInput(this)">
+    <input
+      type="text"
+      id="total"
+      placeholder="Masukkan total panen"
+      oninput="formatInput(this)"
+    >
+
     <button onclick="hitung()">Hitung</button>
+
     <div id="output" class="result"></div>
   </div>
 
   <script>
+    // Total pohon: 800
     const persentase = {
-      Mamih: 200/700,
-      Papah: 200/700,
-      Bagus: 150/700,
-      Nabilah: 150/700
+      Mamih: 200 / 800,
+      Papah: 200 / 800,
+      Bagus: 150 / 800,
+      Teteh: 250 / 800
     };
 
     function formatRupiah(angka) {
@@ -122,43 +128,47 @@
 
     function formatInput(input) {
       let value = input.value.replace(/\D/g, "");
-      if (value) {
-        input.value = formatRupiah(value);
-      } else {
-        input.value = "";
-      }
+      input.value = value ? formatRupiah(value) : "";
     }
 
     function terbilang(bilangan) {
       const satuan = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
       if (bilangan < 12) return satuan[bilangan];
       if (bilangan < 20) return satuan[bilangan - 10] + " belas";
-      if (bilangan < 100) return terbilang(Math.floor(bilangan/10)) + " puluh " + satuan[bilangan%10];
+      if (bilangan < 100) return terbilang(Math.floor(bilangan / 10)) + " puluh " + satuan[bilangan % 10];
       if (bilangan < 200) return "seratus " + terbilang(bilangan - 100);
-      if (bilangan < 1000) return terbilang(Math.floor(bilangan/100)) + " ratus " + terbilang(bilangan%100);
+      if (bilangan < 1000) return terbilang(Math.floor(bilangan / 100)) + " ratus " + terbilang(bilangan % 100);
       if (bilangan < 2000) return "seribu " + terbilang(bilangan - 1000);
-      if (bilangan < 1000000) return terbilang(Math.floor(bilangan/1000)) + " ribu " + terbilang(bilangan%1000);
-      if (bilangan < 1000000000) return terbilang(Math.floor(bilangan/1000000)) + " juta " + terbilang(bilangan%1000000);
+      if (bilangan < 1000000) return terbilang(Math.floor(bilangan / 1000)) + " ribu " + terbilang(bilangan % 1000);
+      if (bilangan < 1000000000) return terbilang(Math.floor(bilangan / 1000000)) + " juta " + terbilang(bilangan % 1000000);
       return "";
     }
 
     function hitung() {
-      let totalInput = document.getElementById("total").value.replace(/\./g, "");
+      const totalInput = document.getElementById("total").value.replace(/\./g, "");
       const total = parseInt(totalInput);
+
       if (isNaN(total) || total <= 0) {
-        document.getElementById("output").innerHTML = "<em>Masukkan jumlah panen yang valid.</em>";
+        document.getElementById("output").innerHTML =
+          "<em>Masukkan jumlah panen yang valid.</em>";
         return;
       }
+
       let output = "";
 
       for (const [nama, porsi] of Object.entries(persentase)) {
         const bagian = Math.floor(total * porsi);
+
         output += `
           <div class="person">
-            <div class="person-name"><strong>${nama}</strong> (${Math.round(porsi*10000)/100}% | ${porsi*700} pohon)</div>
+            <div class="person-name">
+              <strong>${nama}</strong>
+              (${Math.round(porsi * 10000) / 100}% | ${porsi * 800} pohon)
+            </div>
             <div class="person-amount">Rp ${formatRupiah(bagian)}</div>
             <div class="person-terbilang">(${terbilang(bagian)} rupiah)</div>
-          </div>`;
+          </div>
+        `;
       }
 
       document.getElementById("output").innerHTML = output;
