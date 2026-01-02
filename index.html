@@ -20,15 +20,27 @@
     .container {
       max-width: 650px;
       margin: auto;
-      background: #fff;
+      background: #ffffff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
+    .grade {
+      background: #eef4ff;
+      border: 1px solid #c9d8ff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .grade h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
     label {
+      display: block;
       font-size: 14px;
       margin-bottom: 5px;
-      display: block;
     }
     input {
       width: 100%;
@@ -51,13 +63,6 @@
     }
     button:hover {
       background: #45a049;
-    }
-    .section {
-      background: #eef4ff;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      border: 1px solid #c9d8ff;
     }
     .summary {
       background: #fff3cd;
@@ -95,27 +100,33 @@
 <div class="container">
   <h1>Pembagian Hasil Panen Delis Banana</h1>
 
-  <div class="section">
-    <strong>Jumlah Panen (Kg)</strong>
-    <label>Grade A</label>
-    <input type="number" id="kgA" placeholder="Kg Grade A">
+  <!-- GRADE A -->
+  <div class="grade">
+    <h3>Grade A</h3>
+    <label>Jumlah Panen (Kg)</label>
+    <input type="number" id="kgA" placeholder="Masukkan Kg Grade A">
 
-    <label>Grade B</label>
-    <input type="number" id="kgB" placeholder="Kg Grade B">
-
-    <label>Grade C</label>
-    <input type="number" id="kgC" placeholder="Kg Grade C">
+    <label>Harga per Kg (Rp)</label>
+    <input type="text" id="hargaA" oninput="formatInput(this)" placeholder="Harga Grade A">
   </div>
 
-  <div class="section">
-    <strong>Harga Pisang per Kg (Rp)</strong>
-    <label>Grade A</label>
-    <input type="text" id="hargaA" oninput="formatInput(this)" placeholder="Harga Grade A">
+  <!-- GRADE B -->
+  <div class="grade">
+    <h3>Grade B</h3>
+    <label>Jumlah Panen (Kg)</label>
+    <input type="number" id="kgB" placeholder="Masukkan Kg Grade B">
 
-    <label>Grade B</label>
+    <label>Harga per Kg (Rp)</label>
     <input type="text" id="hargaB" oninput="formatInput(this)" placeholder="Harga Grade B">
+  </div>
 
-    <label>Grade C</label>
+  <!-- GRADE C -->
+  <div class="grade">
+    <h3>Grade C</h3>
+    <label>Jumlah Panen (Kg)</label>
+    <input type="number" id="kgC" placeholder="Masukkan Kg Grade C">
+
+    <label>Harga per Kg (Rp)</label>
     <input type="text" id="hargaC" oninput="formatInput(this)" placeholder="Harga Grade C">
   </div>
 
@@ -125,12 +136,13 @@
 </div>
 
 <script>
-  // Pembagian 800 pohon
+  // Pembagian 700 pohon
+  const TOTAL_POHON = 700;
   const persentase = {
-    Mamih: 200 / 800,
-    Papah: 200 / 800,
-    Bagus: 150 / 800,
-    Teteh: 250 / 800
+    Mamih: 200 / TOTAL_POHON,
+    Papah: 200 / TOTAL_POHON,
+    Bagus: 150 / TOTAL_POHON,
+    Teteh: 150 / TOTAL_POHON
   };
 
   function formatRupiah(angka) {
@@ -138,8 +150,8 @@
   }
 
   function formatInput(input) {
-    let val = input.value.replace(/\D/g, "");
-    input.value = val ? formatRupiah(val) : "";
+    let value = input.value.replace(/\D/g, "");
+    input.value = value ? formatRupiah(value) : "";
   }
 
   function terbilang(bil) {
@@ -156,41 +168,38 @@
   }
 
   function hitung() {
-    const kgA = parseFloat(document.getElementById("kgA").value) || 0;
-    const kgB = parseFloat(document.getElementById("kgB").value) || 0;
-    const kgC = parseFloat(document.getElementById("kgC").value) || 0;
+    const data = [
+      { kg: kgA.value, harga: hargaA.value },
+      { kg: kgB.value, harga: hargaB.value },
+      { kg: kgC.value, harga: hargaC.value }
+    ];
 
-    const hargaA = parseInt(document.getElementById("hargaA").value.replace(/\./g, "")) || 0;
-    const hargaB = parseInt(document.getElementById("hargaB").value.replace(/\./g, "")) || 0;
-    const hargaC = parseInt(document.getElementById("hargaC").value.replace(/\./g, "")) || 0;
-
-    const total =
-      (kgA * hargaA) +
-      (kgB * hargaB) +
-      (kgC * hargaC);
+    let total = 0;
+    data.forEach(d => {
+      const kg = parseFloat(d.kg) || 0;
+      const harga = parseInt(d.harga.replace(/\./g, "")) || 0;
+      total += kg * harga;
+    });
 
     if (total <= 0) {
-      document.getElementById("output").innerHTML = "<em>Masukkan data panen dan harga dengan benar.</em>";
+      output.innerHTML = "<em>Masukkan data panen dan harga dengan benar.</em>";
       return;
     }
 
-    let output = `
+    let html = `
       <div class="summary">
         <strong>Total Hasil Panen:</strong><br>
-        Grade A: ${kgA} Kg × Rp ${formatRupiah(hargaA)}<br>
-        Grade B: ${kgB} Kg × Rp ${formatRupiah(hargaB)}<br>
-        Grade C: ${kgC} Kg × Rp ${formatRupiah(hargaC)}<br><br>
-        <strong>Total Keseluruhan:</strong> Rp ${formatRupiah(total)}
+        Rp ${formatRupiah(Math.floor(total))}
       </div>
     `;
 
     for (const [nama, porsi] of Object.entries(persentase)) {
       const bagian = Math.floor(total * porsi);
-      output += `
+      html += `
         <div class="person">
           <div class="person-name">
             <strong>${nama}</strong>
-            (${Math.round(porsi * 10000) / 100}% | ${porsi * 800} pohon)
+            (${Math.round(porsi * 10000) / 100}% | ${porsi * TOTAL_POHON} pohon)
           </div>
           <div class="person-amount">Rp ${formatRupiah(bagian)}</div>
           <div class="person-terbilang">(${terbilang(bagian)} rupiah)</div>
@@ -198,7 +207,7 @@
       `;
     }
 
-    document.getElementById("output").innerHTML = output;
+    output.innerHTML = html;
   }
 </script>
 
