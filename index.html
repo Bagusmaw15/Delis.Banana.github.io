@@ -100,34 +100,29 @@
 <div class="container">
   <h1>Pembagian Hasil Panen Delis Banana</h1>
 
-  <!-- GRADE A -->
+  <!-- INPUT PER GRADE -->
   <div class="grade">
     <h3>Grade A</h3>
     <label>Jumlah Panen (Kg)</label>
-    <input type="number" id="kgA" placeholder="Masukkan Kg Grade A">
-
+    <input type="number" id="kgA">
     <label>Harga per Kg (Rp)</label>
-    <input type="text" id="hargaA" oninput="formatInput(this)" placeholder="Harga Grade A">
+    <input type="text" id="hargaA" oninput="formatInput(this)">
   </div>
 
-  <!-- GRADE B -->
   <div class="grade">
     <h3>Grade B</h3>
     <label>Jumlah Panen (Kg)</label>
-    <input type="number" id="kgB" placeholder="Masukkan Kg Grade B">
-
+    <input type="number" id="kgB">
     <label>Harga per Kg (Rp)</label>
-    <input type="text" id="hargaB" oninput="formatInput(this)" placeholder="Harga Grade B">
+    <input type="text" id="hargaB" oninput="formatInput(this)">
   </div>
 
-  <!-- GRADE C -->
   <div class="grade">
     <h3>Grade C</h3>
     <label>Jumlah Panen (Kg)</label>
-    <input type="number" id="kgC" placeholder="Masukkan Kg Grade C">
-
+    <input type="number" id="kgC">
     <label>Harga per Kg (Rp)</label>
-    <input type="text" id="hargaC" oninput="formatInput(this)" placeholder="Harga Grade C">
+    <input type="text" id="hargaC" oninput="formatInput(this)">
   </div>
 
   <button onclick="hitung()">Hitung Pembagian</button>
@@ -136,7 +131,6 @@
 </div>
 
 <script>
-  // Pembagian 700 pohon
   const TOTAL_POHON = 700;
   const persentase = {
     Mamih: 200 / TOTAL_POHON,
@@ -168,17 +162,24 @@
   }
 
   function hitung() {
-    const data = [
-      { kg: kgA.value, harga: hargaA.value },
-      { kg: kgB.value, harga: hargaB.value },
-      { kg: kgC.value, harga: hargaC.value }
+    const grades = [
+      { nama: "Grade A", kg: +kgA.value || 0, harga: parseInt(hargaA.value.replace(/\./g,"")) || 0 },
+      { nama: "Grade B", kg: +kgB.value || 0, harga: parseInt(hargaB.value.replace(/\./g,"")) || 0 },
+      { nama: "Grade C", kg: +kgC.value || 0, harga: parseInt(hargaC.value.replace(/\./g,"")) || 0 }
     ];
 
     let total = 0;
-    data.forEach(d => {
-      const kg = parseFloat(d.kg) || 0;
-      const harga = parseInt(d.harga.replace(/\./g, "")) || 0;
-      total += kg * harga;
+    let detail = "";
+
+    grades.forEach(g => {
+      const subtotal = g.kg * g.harga;
+      total += subtotal;
+      if (subtotal > 0) {
+        detail += `
+          ${g.nama}: ${g.kg} Kg × Rp ${formatRupiah(g.harga)}
+          = <strong>Rp ${formatRupiah(subtotal)}</strong><br>
+        `;
+      }
     });
 
     if (total <= 0) {
@@ -188,8 +189,10 @@
 
     let html = `
       <div class="summary">
-        <strong>Total Hasil Panen:</strong><br>
-        Rp ${formatRupiah(Math.floor(total))}
+        <strong>Rincian Hasil Panen</strong><br>
+        ${detail}<br>
+        <strong>Total Keseluruhan:</strong>
+        Rp ${formatRupiah(total)}
       </div>
     `;
 
